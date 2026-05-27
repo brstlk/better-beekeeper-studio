@@ -24,12 +24,6 @@
     </div>
   </div>
   <div
-    v-else-if="isCommunity"
-    class="upgrade-panel-tab-wrapper"
-  >
-    <upgrade-panel :feature-name="isRestore ? 'Database Restore' : 'Database Backup'" standalone />
-  </div>
-  <div
     v-else-if="dataLoaded"
     class="tabcontent"
   >
@@ -138,7 +132,6 @@ import BackupSettings from './backup/BackupSettings.vue';
 import BackupReview from './backup/BackupReview.vue';
 import BackupProgress from './backup/BackupProgress.vue';
 import Stepper from './stepper/Stepper.vue';
-import UpgradePanel from '@/components/upsell/UpgradePanel.vue'
 import { Step } from './stepper/models';
 import { mapGetters, mapState } from 'vuex';
 import StatusBar from '@/components/common/StatusBar.vue';
@@ -147,8 +140,7 @@ export default Vue.extend({
   components: {
     Stepper,
     BackupProgress,
-    StatusBar,
-    UpgradePanel
+    StatusBar
   },
   props: ['connection', 'tab', 'isRestore', 'active'],
   data() {
@@ -180,7 +172,6 @@ export default Vue.extend({
       'backupFeatures': 'backups/supportedFeatures',
       'logFile': 'backups/logFilePath',
       'dialect': 'dialect',
-      'isCommunity': 'isCommunity',
     }),
     ...mapState('backups', {
       'backupTables': 'backupTables',

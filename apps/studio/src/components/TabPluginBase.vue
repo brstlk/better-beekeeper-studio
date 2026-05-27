@@ -1,8 +1,5 @@
 <template>
-  <div v-if="isCommunity && tab.context.pluginId.startsWith('bks-')" class="upgrade-panel-tab-wrapper">
-    <upgrade-panel :feature-name="tab.title || 'Plugins'" standalone />
-  </div>
-  <div v-else class="plugin-base" ref="container">
+  <div class="plugin-base" ref="container">
     <isolated-plugin-view
       :visible="active"
       :plugin-id="tab.context.pluginId"
@@ -19,8 +16,6 @@ import { PropType } from "vue";
 import { TransportPluginTab } from "@/common/transport/TransportOpenTab";
 import IsolatedPluginView from "@/components/plugins/IsolatedPluginView.vue";
 import Vue from "vue";
-import { mapGetters } from "vuex";
-import UpgradePanel from "@/components/upsell/UpgradePanel.vue";
 import { OnViewRequestListenerParams } from "@/services/plugin/types";
 import rawLog from "@bksLogger";
 
@@ -29,7 +24,6 @@ const log = rawLog.scope("TabPluginBase");
 export default Vue.extend({
   components: {
     IsolatedPluginView,
-    UpgradePanel,
   },
 
   props: {
@@ -38,10 +32,6 @@ export default Vue.extend({
       required: true,
     },
     active: Boolean,
-  },
-
-  computed: {
-    ...mapGetters(["isCommunity"]),
   },
 
   methods: {

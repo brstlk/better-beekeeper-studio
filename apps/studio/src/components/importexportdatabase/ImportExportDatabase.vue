@@ -1,11 +1,5 @@
 <template>
-  <div
-    v-if="isCommunity"
-    class="upgrade-panel-tab-wrapper"
-  >
-    <upgrade-panel feature-name="Multi-Table Export" standalone />
-  </div>
-  <div v-else class="import-export__wrapper tabcontent">
+  <div class="import-export__wrapper tabcontent">
     <div class="import-export__container">
       <stepper
         :steps="exportSteps"
@@ -91,7 +85,6 @@
   import ExportObjects from './ExportObjects.vue'
   import ExportOptions from './ExportOptions.vue'
   import ExportConfirmation from './ExportConfirmation.vue'
-  import UpgradePanel from '@/components/upsell/UpgradePanel.vue'
 
   import { ExportStatus } from '../../lib/export/models'
   import StatusBar from '@/components/common/StatusBar.vue';
@@ -99,8 +92,7 @@
   export default {
     components: {
       Stepper,
-      StatusBar,
-      UpgradePanel
+      StatusBar
     },
     props: ['schema', 'tab', 'active'],
     data() {
@@ -153,7 +145,6 @@
       ...mapState('multiTableExports', ['tablesToExport', 'tableOptions', 'exportSchema']),
       ...mapGetters({
         'hasRunningExports': 'exports/hasRunningExports',
-        'isCommunity': 'isCommunity',
       }),
       selectedTables() {
         return this.tablesToExport.length;

@@ -214,27 +214,6 @@
               </div>
             </form>
           </div>
-          <upgrade-panel
-            v-if="shouldUpsell"
-            :feature-name="friendlyConnectionType"
-            standalone
-            class="connection-upgrade-panel"
-          />
-          <template v-if="!config.connectionType">
-            <div class="pitch" v-if="!isUltimate">
-              🌟 <strong>Upgrade</strong> to access the JSON sidebar, AI shell, robust import/export and much more!
-              <a href="https://beekeeperstudio.io/pricing" class="">Upgrade</a>.
-            </div>
-            <div class="pitch" v-else-if="isTrial">
-              🌟 <strong>Trial expires {{ $bks.timeAgo(trialLicense.validUntil) }}</strong> Upgrade now to make sure you
-              don't lose access.
-              <a href="https://beekeeperstudio.io/pricing" class="">Upgrade</a>.
-            </div>
-            <div class="pitch" v-else>
-              🌟 <strong>AI Shell</strong> - Let an LLM explore your database and write SQL for you. Bring your own API key. Simply open a new tab to get started.
-              <a href="https://www.beekeeperstudio.io/features/sql-ai">Learn more</a>
-            </div>
-          </template>
         </div>
 
         <small class="app-version">
@@ -279,7 +258,6 @@ import { mapGetters, mapState } from 'vuex'
 import { dialectFor } from '@shared/lib/dialects/models'
 import { findClient } from '@/lib/db/clients'
 import { AzureAuthType } from '@/lib/db/types'
-import UpgradePanel from '@/components/upsell/UpgradePanel.vue'
 import Vue from 'vue'
 import { AppEvent } from '@/common/AppEvent'
 import { isUltimateType } from '@/common/interfaces/IConnection'
@@ -292,7 +270,7 @@ const log = rawLog.scope('ConnectionInterface')
 // import ImportUrlForm from './connection/ImportUrlForm';
 
 export default Vue.extend({
-  components: { ConnectionSidebar, MysqlForm, BedrockForm, PostgresForm, RedshiftForm, CassandraForm, Sidebar, SqliteForm, SqlServerForm, SaveConnectionForm, ImportButton, ErrorAlert, OracleForm, BigQueryForm, FirebirdForm, UpgradePanel, LibSqlForm: LibSQLForm, LoadingSsoModal: LoadingSSOModal, ClickHouseForm, TrinoForm, MongoDbForm, DuckDbForm, SqlAnywhereForm, RedisForm, DynamoDbForm, ContentPlaceholderHeading, SurrealDbForm, PrivacyBanner
+  components: { ConnectionSidebar, MysqlForm, BedrockForm, PostgresForm, RedshiftForm, CassandraForm, Sidebar, SqliteForm, SqlServerForm, SaveConnectionForm, ImportButton, ErrorAlert, OracleForm, BigQueryForm, FirebirdForm, LibSqlForm: LibSQLForm, LoadingSsoModal: LoadingSSOModal, ClickHouseForm, TrinoForm, MongoDbForm, DuckDbForm, SqlAnywhereForm, RedisForm, DynamoDbForm, ContentPlaceholderHeading, SurrealDbForm, PrivacyBanner
   },
 
   data() {

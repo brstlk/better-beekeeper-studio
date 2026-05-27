@@ -15,7 +15,6 @@
         />
         <auto-updater />
         <notification-manager />
-        <upgrade-required-modal />
       </template>
     </div>
     <portal-target
@@ -65,7 +64,6 @@ import ConfigurationWarningModal from '@/components/ConfigurationWarningModal.vu
 import WorkspaceCreateModal from '@/components/data/WorkspaceCreateModal.vue'
 import WorkspaceRenameModal from '@/components/data/WorkspaceRenameModal.vue'
 import WorkspaceDeleteModal from '@/components/data/WorkspaceDeleteModal.vue'
-import UpgradeRequiredModal from './components/upsell/UpgradeRequiredModal.vue'
 import WorkspaceSignInModal from '@/components/data/WorkspaceSignInModal.vue'
 import ImportQueriesModal from '@/components/data/ImportQueriesModal.vue'
 import ImportConnectionsModal from '@/components/data/ImportConnectionsModal.vue'
@@ -99,7 +97,7 @@ export default Vue.extend({
   mixins: [assignContextMenuToAllInputs],
   components: {
     CoreInterface, ConnectionInterface, Titlebar, AutoUpdater, NotificationManager,
-    DataManager, UpgradeRequiredModal, ConfirmationModalManager, Dropzone,
+    DataManager, ConfirmationModalManager, Dropzone,
     UtilDiedModal, WorkspaceSignInModal, ImportQueriesModal, ImportConnectionsModal,
     EnterLicenseModal, TrialExpiredModal, LicenseExpiredModal,
     LifetimeLicenseExpiredModal, WorkspaceCreateModal, WorkspaceRenameModal, WorkspaceDeleteModal,

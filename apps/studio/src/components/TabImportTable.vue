@@ -9,12 +9,6 @@
       </p>
     </div>
   </div>
-  <div
-    v-else-if="isCommunity"
-    class="upgrade-panel-tab-wrapper"
-  >
-    <upgrade-panel feature-name="Import From File" standalone />
-  </div>
   <div v-else class="tab-content">
     <div class="import-table-container">
       <stepper
@@ -116,7 +110,6 @@
   import ImportTable from './importtable/ImportTable.vue'
   import ImportMapper from './importtable/ImportMapper.vue'
   import ImportPreview from './importtable/ImportPreview.vue'
-  import UpgradePanel from '@/components/upsell/UpgradePanel.vue'
   import { DialectTitles } from '@shared/lib/dialects/models'
 
   import { ExportStatus } from '../lib/export/models'
@@ -125,8 +118,7 @@
   export default {
     components: {
       Stepper,
-      StatusBar,
-      UpgradePanel
+      StatusBar
     },
     props: {
       schema: {
@@ -211,7 +203,7 @@
       }
     },
     computed: {
-      ...mapGetters(['schemaTables', 'dialectData', 'dialect', 'isCommunity', 'isUltimate']),
+      ...mapGetters(['schemaTables', 'dialectData', 'dialect', 'isUltimate']),
       ...mapState(['tables', 'connection']),
       ...mapState('imports', {'tablesToImport': 'tablesToImport'}),
       isSpinning() {

@@ -150,3 +150,47 @@ Form sections gated by this:
 4. Disable date/version expiry in `LicenseKey.ts:13` (`keysToStatus`).
 5. Disable trial expiry noty in `App.vue:200`.
 6. (Cosmetic) hide upsell panels/modals/external links.
+
+---
+
+## Removal Log
+
+### 2026-05-27 — decorative panels/buttons stripped
+
+Removed all pure-CTA panels/buttons (no feature behind them — vanish on upgrade with nothing unlocked).
+
+**Files deleted:**
+- `apps/studio/src/components/upsell/UpgradePanel.vue` — generic "Unlock X" pitch panel
+- `apps/studio/src/components/upsell/UpgradeRequiredModal.vue` — `AppEvent.upgradeModal` listener modal (only wrapped `UpgradePanel`)
+
+**Files edited (UpgradePanel import + `v-if="isCommunity"` upsell block removed):**
+- `apps/studio/src/components/TabDatabaseBackup.vue` — also dropped now-unused `isCommunity` mapGetter
+- `apps/studio/src/components/TabImportTable.vue` — also dropped now-unused `isCommunity` mapGetter
+- `apps/studio/src/components/TabPluginBase.vue` — also dropped `mapGetters(["isCommunity"])` computed
+- `apps/studio/src/components/TabPluginShell.vue` — kept `AiShellUpsell` branch (real feature behind it); simplified template to only short-circuit for AI shell plugin
+- `apps/studio/src/components/importexportdatabase/ImportExportDatabase.vue` — also dropped now-unused `isCommunity` mapGetter
+
+**`ConnectionInterface.vue`:**
+- Removed `<upgrade-panel v-if="shouldUpsell" …>` block (lines ~217–222)
+- Removed `<template v-if="!config.connectionType">` pitch block (lines ~223–237) — community/trial/AI-shell pitch with pricing links
+- Removed `UpgradePanel` import + components registration
+- `shouldUpsell` computed kept (still gates form-section visibility for ultimate-type DBs — real feature gate, not decorative)
+- `friendlyConnectionType` computed now unused but left in place (out of scope)
+
+**`CoreTabs.vue`:**
+- Removed upgrade button `<a @click="showUpgradeModal" v-if="isCommunity">` (line ~59–66)
+- Removed `showUpgradeModal()` method (line ~497)
+
+**`App.vue`:**
+- Removed `<upgrade-required-modal />` from template (line 18)
+- Removed `UpgradeRequiredModal` import + components registration
+
+**Kept (real features behind paywall):**
+- `apps/studio/src/components/upsell/AiShellUpsell.vue` + `AiShellPreview.vue` — replaces real AI shell feature
+- `apps/studio/src/components/upsell/JsonViewerSidebarUpsell.vue` — replaces real JSON viewer feature
+- `apps/studio/src/components/upsell/common/UpsellButtons.vue` — used by the two upsell screens above
+
+**Dangling but harmless:**
+- 15+ `this.$root.$emit(AppEvent.upgradeModal, …)` calls across sidebar/connection forms/RowFilterBuilder/TabQueryEditor/ExportModal still emit; no listener now → silent no-ops
+- Menu item `upgradeModal` in `MenuItems.ts:9` / `NativeMenuActionHandlers.ts:205` still wired but emits to nothing
+- CSS classes `.upgrade-panel-tab-wrapper`, `.connection-upgrade-panel`, `.pitch`, `.btn-upgrade` now unused
