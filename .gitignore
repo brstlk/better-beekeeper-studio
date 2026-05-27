@@ -26,3 +26,7 @@ apps/studio/test-results
 *.log
 *.orig
 surreal_data/
+
+# ai agent storage
+.memsearch/
+**/.memsearch/
