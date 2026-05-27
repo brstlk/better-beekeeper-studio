@@ -13,7 +13,6 @@ import { HiddenEntity } from "./models/HiddenEntity"
 import { HiddenSchema } from "./models/HiddenSchema"
 import { PinnedConnection } from "./models/PinnedConnection"
 import { TokenCache } from "./models/token_cache"
-import { InstallationId } from "./models/installation_id"
 import { UserPin } from "./models/UserPin"
 import { PluginData } from "./models/PluginData";
 import { EncryptedPluginData } from "./models/EncryptedPluginData"
@@ -36,7 +35,6 @@ const models = [
   HiddenSchema,
   PinnedConnection,
   TokenCache,
-  InstallationId,
   UserPin,
   PluginData,
   EncryptedPluginData,

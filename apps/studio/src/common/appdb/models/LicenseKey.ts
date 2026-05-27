@@ -109,8 +109,11 @@ export class LicenseKey extends ApplicationEntity {
 
 
   static async getLicenseStatus(): Promise<LicenseStatus> {
-    const licenses = await LicenseKey.find();
-    return keysToStatus(licenses)
+    // License validation stubbed out: always report ultimate edition.
+    const status = new LicenseStatus();
+    status.edition = "ultimate";
+    status.condition = ["Stubbed ultimate"];
+    return status;
   }
 
   public get active() : boolean {

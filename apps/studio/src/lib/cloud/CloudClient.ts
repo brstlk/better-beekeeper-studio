@@ -12,7 +12,6 @@ import { WorkspacesController } from './controllers/WorkspacesController';
 import { ConnectionFoldersController } from '@/lib/cloud/controllers/ConnectionFoldersController';
 import { QueryFoldersController } from '@/lib/cloud/controllers/QueryFoldersController';
 import { UsedQueriesController } from '@/lib/cloud/controllers/UsedQueriesController';
-import { LicenseKeyController } from './controllers/LicenseKeyController';
 import { camelCaseObjectKeys, snakeCaseObjectKeys } from '@/common/utils';
 
 import { IPlatformInfo } from '@/common/IPlatformInfo';
@@ -64,10 +63,15 @@ export class CloudClient {
   }
 
 
-  public static async getLicense(baseUrl: string, email: string, key: string, installationId = "", platformInfo: IPlatformInfo) {
-    const controller = new LicenseKeyController(staticAxios(baseUrl))
-    log.debug("Fetching license info! Installation id", installationId)
-    return await controller.get(email, key, installationId, platformInfo)
+  public static async getLicense(_baseUrl: string, _email: string, _key: string, _installationId = "", _platformInfo: IPlatformInfo) {
+    // License validation stubbed out: synthesize a paid license response.
+    const farFuture = new Date(8640000000000000);
+    return {
+      validUntil: farFuture,
+      supportUntil: farFuture,
+      maxAllowedAppRelease: null,
+      licenseType: "PersonalLicense" as const,
+    };
   }
 
   axios: AxiosInstance

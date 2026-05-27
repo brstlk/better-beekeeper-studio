@@ -1,5 +1,5 @@
 import _ from 'lodash'
-import { install, Module } from "vuex";
+import { Module } from "vuex";
 import rawLog from '@bksLogger'
 import { State as RootState } from '../index'
 import { CloudError } from '@/lib/cloud/ClientHelpers';
@@ -15,17 +15,11 @@ interface State {
   error: CloudError | Error | null
   now: Date
   status: LicenseStatus,
-  installationId: string | null
 }
 
 const log = rawLog.scope('LicenseModule')
 
 const oneDay = 24 * 60 * 60 * 1000; // hours*minutes*seconds*milliseconds
-
-// Coalesce overlapping dispatches so a tight loop (or a duplicate mount) can't
-// hammer the license server with identical in-flight requests.
-let inflightUpdateAll: Promise<void> | null = null
-const inflightUpdates = new Map<string, Promise<void>>()
 
 const defaultStatus = new LicenseStatus()
 Object.assign(defaultStatus, {
@@ -41,7 +35,6 @@ export const LicenseModule: Module<State, RootState>  = {
     error: null,
     now: new Date(),
     status: defaultStatus,
-    installationId: null
   }),
   getters: {
     trialLicense(state) {
@@ -83,9 +76,6 @@ export const LicenseModule: Module<State, RootState>  = {
     setInitialized(state, b: boolean) {
       state.initialized = b
     },
-    installationId(state, id: string) {
-      state.installationId = id
-    },
     setNow(state, date: Date) {
       state.now = date
     },
@@ -100,8 +90,6 @@ export const LicenseModule: Module<State, RootState>  = {
         return
       }
       await context.dispatch('sync')
-      const installationId = await Vue.prototype.$util.send('license/getInstallationId');
-      context.commit('installationId', installationId)
       context.commit('setInitialized', true)
     },
     async add(context, { email, key, trial }) {
@@ -115,14 +103,11 @@ export const LicenseModule: Module<State, RootState>  = {
           return
         }
       } else {
-        // Get the installation ID from the backend
-        const installationId = context.state.installationId
-
         const result = await CloudClient.getLicense(
           window.platformInfo.cloudUrl,
           email,
           key,
-          installationId,
+          "",
           window.platformInfo
         );
 
@@ -140,84 +125,10 @@ export const LicenseModule: Module<State, RootState>  = {
       SmartLocalStorage.setBool('expiredLicenseEventsEmitted', false)
       await context.dispatch('sync')
     },
-    async update(_context, license: TransportLicenseKey) {
-      if (license.id == null) {
-        // Saving a license without an id would INSERT a new row. The only
-        // legitimate no-id path is add(); update() should only ever see
-        // persisted rows. Offline/file-based licenses also land here with
-        // null ids, and they shouldn't be synced to the server.
-        log.warn('Skipping license update: no id on license', license.key)
-        return
-      }
-
-      const existing = inflightUpdates.get(license.key)
-      if (existing) return existing
-
-      const work = (async () => {
-        // This is to allow for dev switching
-        const isDevUpdate = window.platformInfo.isDevelopment && license.email == "fake_email";
-        try {
-          const installationId = _context.state.installationId
-
-          const data = isDevUpdate ? license : await CloudClient.getLicense(
-            window.platformInfo.cloudUrl,
-            license.email,
-            license.key,
-            installationId,
-            window.platformInfo
-          );
-
-          license.validUntil = new Date(data.validUntil)
-          license.supportUntil = new Date(data.supportUntil)
-          license.maxAllowedAppRelease = data.maxAllowedAppRelease
-          // A successful fetch clears any prior "server said this key is invalid"
-          // marker, so a key that support restores naturally re-activates.
-          license.invalidatedAt = null
-          await Vue.prototype.$util.send('appdb/license/save', { obj: license });
-        } catch (error) {
-          if (error instanceof CloudError) {
-            log.error("Cloud error on license fetch: ", error.message)
-            license.validUntil = new Date()
-            // 404 means the server no longer recognizes this key (eg support
-            // revoked it). Stamp it so the UI can surface that state; other
-            // CloudError statuses (403, etc) are auth/entitlement issues and
-            // should not set the flag.
-            if (error.status === 404) {
-              license.invalidatedAt = new Date()
-            }
-            await Vue.prototype.$util.send('appdb/license/save', { obj: license });
-          } else {
-            log.error("Problems getting license", error)
-            // eg 500 errors
-            // do nothing
-          }
-        }
-      })()
-
-      inflightUpdates.set(license.key, work)
-      try {
-        await work
-      } finally {
-        inflightUpdates.delete(license.key)
-      }
-    },
     async updateAll(context) {
-      if (inflightUpdateAll) return inflightUpdateAll
-
-      const work = (async () => {
-        for (let index = 0; index < context.getters.realLicenses.length; index++) {
-          const license = context.getters.realLicenses[index];
-          await context.dispatch('update', license);
-        }
-        await context.dispatch('sync');
-      })()
-
-      inflightUpdateAll = work
-      try {
-        await work
-      } finally {
-        inflightUpdateAll = null
-      }
+      // License validation stubbed out: skip the network poll entirely and
+      // just refresh local state from the (stubbed) status handler.
+      await context.dispatch('sync');
     },
     async remove(context, license) {
       await Vue.prototype.$util.send('license/remove', { id: license.id })
